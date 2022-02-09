@@ -1,8 +1,10 @@
 package com.atguigu.srb.core.controller.admin;
 
+import com.atguigu.common.result.R;
 import com.atguigu.srb.core.pojo.entity.IntegralGrade;
 import com.atguigu.srb.core.service.IntegralGradeService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -15,16 +17,24 @@ public class AdminIntegralGradeController {
     @Resource
     private IntegralGradeService integralGradeService;
 
-    @GetMapping("/list")
     @ApiOperation("积分等级列表")
-    public List<IntegralGrade> listAll(){
-        return integralGradeService.list();
+    @GetMapping("/list")
+    public R listAll(){
+        List<IntegralGrade> list = integralGradeService.list();
+        return R.ok().data("list", list);
     }
 
+    @ApiOperation(value = "根据id删除积分等级", notes="逻辑删除")
     @DeleteMapping("/remove/{id}")
-    @ApiOperation(value = "根据id删除积分等级", notes = "逻辑删除")
-    public boolean removeById(@PathVariable Long id ){
-
-        return integralGradeService.removeById(id);
+    public R removeById(
+            @ApiParam(value = "数据id", required = true, example = "1")
+            @PathVariable Long id){
+        boolean result = integralGradeService.removeById(id);
+        if(result){
+            //return R.setResult(ResponseEnum.UPLOAD_ERROR);
+            return R.ok().message("删除成功");
+        }else{
+            return R.error().message("删除失败");
+        }
     }
 }
